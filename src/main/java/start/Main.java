@@ -1,7 +1,7 @@
 package start;
 
 
-import game.GamePanel;
+import util.GameUtil;
 
 import javax.swing.*;
 
@@ -11,10 +11,9 @@ public class Main {
         System.out.println("Start!");
 
         //创建一个新的框架
-        JFrame frame = new JFrame("TankNode Battle");
+        JFrame frame = new JFrame("PlayerNode Battle");
         //创建一个新的面板类
-        GamePanel panel = new GamePanel();
-        frame.add(panel);
+        frame.add(GameUtil.gamePanel);
         frame.setSize(1000, 1000);
         //设置用户点击关闭窗口可以正常关闭
         frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
@@ -23,7 +22,7 @@ public class Main {
         frame.setVisible(true);
 
         while (true) {
-            panel.updateGame();
+            GameUtil.gamePanel.updateGame();
             try {
                 Thread.sleep(50);
             } catch (InterruptedException e) {

@@ -1,6 +1,7 @@
 package node;
 
 import game.GamePanel;
+import level.GameLevel;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 import util.GameUtil;
@@ -16,13 +17,14 @@ public class GameNode {
     private int width = 50;
     private int height = 50;
 
-    private int speed = 5;
-    private int speed2 = 15;
     int boundX = 800;
     int boundY = 800;
 
+    //改变节点1方向的参数
     private int count = 0;
     int changeCount = 30;
+
+    //节点1方向个数
     int directCount = 4;
 
     private int direction = new Random().nextInt(directCount); // 0: up, 1: down, 2: left, 3: right
@@ -33,32 +35,38 @@ public class GameNode {
 
     private Image image;
 
-    public GameNode(boolean isRandom, String imagePath, int curLevels) {
-        if (isRandom) {
-            setRanDomXAndY(curLevels);
-        }
+    private int curLevel;
+
+    public GameNode(String imagePath) {
+        setRanDomXAndY();
+
         image = GameUtil.getNodeImage(imagePath);
     }
 
-    public GameNode(boolean isRandom, Image image, int curLevels) {
-        if (isRandom) {
-            setRanDomXAndY(curLevels);
-        }
+    public GameNode(Image image) {
+        setRanDomXAndY();
+
         this.image = image;
     }
 
-    public void setRanDomXAndY(int curLevels) {
-        this.x = new Random().nextInt(boundX);
-        this.y = new Random().nextInt(boundY);
-        if (curLevels == 2) {
-            this.y = new Random().nextInt(100);
+    public void setRanDomXAndY() {
+        GamePanel gamePanel = GameUtil.gamePanel;
+        GameLevel curGameLevel = gamePanel.getCurGameLevel();
+        if (curGameLevel == null) {
+            return;
         }
+
+        int[] ranDomXAndY = curGameLevel.getRanDomXAndY(boundX, boundY);
+        if (ranDomXAndY == null || ranDomXAndY.length < 2) {
+            return;
+        }
+        this.x = ranDomXAndY[0];
+        this.y = ranDomXAndY[1];
     }
 
     public void draw(Graphics g) {
         g.drawImage(image, x, y, width, height, null);
     }
-
 
     public Rectangle getBounds() {
         return getBounds(width, height);
@@ -75,32 +83,33 @@ public class GameNode {
     public void keyPressed(KeyEvent e) {
         int key = e.getKeyCode();
         if (key == KeyEvent.VK_UP || key == KeyEvent.VK_W) {
-            direction = 0;
+            direction = GameUtil.up;
             isMoving = true;
         } else if (key == KeyEvent.VK_DOWN || key == KeyEvent.VK_S) {
-            direction = 1;
+            direction = GameUtil.down;
             isMoving = true;
         } else if (key == KeyEvent.VK_LEFT || key == KeyEvent.VK_A) {
-            direction = 2;
+            direction = GameUtil.left;
             isMoving = true;
         } else if (key == KeyEvent.VK_RIGHT || key == KeyEvent.VK_D) {
-            direction = 3;
+            direction = GameUtil.right;
             isMoving = true;
         }
     }
 
-    public int move(GamePanel gamePanel) {
-        if (gamePanel == null) {
+    public int move() {
+        GamePanel gamePanel = GameUtil.gamePanel;
+
+        GameLevel curGameLevel = gamePanel.getCurGameLevel();
+        if (curGameLevel == null) {
             return 0;
         }
+
         if (++count >= changeCount) {
             count = 0;
             direction = new Random().nextInt(directCount);
         }
-        int[] newXAndYAndD = getNewXAndYAndD(x, y, direction, speed);
-        if (gamePanel.getCurLevels() == 2) {
-            newXAndYAndD = getNewXAndYAndD(x, y, GameUtil.down, speed2, 1);
-        }
+        int[] newXAndYAndD = curGameLevel.getNewXAndYAndD(this);
         if (newXAndYAndD == null || newXAndYAndD.length < 3) {
             return 0;
         }
@@ -109,7 +118,7 @@ public class GameNode {
         y = newXAndYAndD[1];
         direction = newXAndYAndD[2];
 
-        if (gamePanel.getCurLevels() == 2 && direction == GameUtil.none) {
+        if (curGameLevel.nodeCanExpire() && direction == GameUtil.none) {
             return -1;
         }
 
@@ -120,12 +129,12 @@ public class GameNode {
         return getNewXAndYAndD(x, y, direction, speed, new int[]{boundX, boundY}, 0);
     }
 
-    public int[] getNewXAndYAndD(int x, int y, int direction, int speed, int disappear) {
-        return getNewXAndYAndD(x, y, direction, speed, new int[]{boundX, boundY}, disappear);
-    }
-
     public int[] getNewXAndYAndD(int x, int y, int direction, int speed, int[] limit) {
         return getNewXAndYAndD(x, y, direction, speed, limit, 0);
+    }
+
+    public int[] getNewXAndYAndD(int x, int y, int direction, int speed, int disappear) {
+        return getNewXAndYAndD(x, y, direction, speed, new int[]{boundX, boundY}, disappear);
     }
 
     public int[] getNewXAndYAndD(int x, int y, int direction, int speed, int[] limit, int disappear) {

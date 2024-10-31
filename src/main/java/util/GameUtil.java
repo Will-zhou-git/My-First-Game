@@ -1,5 +1,7 @@
 package util;
 
+import game.GamePanel;
+import lombok.Data;
 import node.GameNode;
 
 import javax.imageio.ImageIO;
@@ -8,8 +10,8 @@ import javax.imageio.stream.ImageInputStream;
 import java.util.*;
 import java.awt.*;
 import java.io.File;
-import java.util.List;
 
+@Data
 public class GameUtil {
 
     public static final int none = -1;
@@ -17,6 +19,8 @@ public class GameUtil {
     public static final int down = 1;
     public static final int left = 2;
     public static final int right = 3;
+
+    public static GamePanel gamePanel = new GamePanel();
 
     public static Image getNodeImage(String filePath) {
         Image image = null;
@@ -42,20 +46,17 @@ public class GameUtil {
         return image;
     }
 
-    public static void generateRandomNodes(List<GameNode> nodes, int nodeCount, String imagePath, int curLevels) {
-        if (nodes == null) {
-            return;
-        }
+    public static void generateRandomNodes(int nodeCount, String imagePath) {
         Image image = null;
         for (int i = 0; i < nodeCount; i++) {
             GameNode gameNode;
             if (image == null) {
-                gameNode = new GameNode(true, imagePath, curLevels);
+                gameNode = new GameNode(imagePath);
                 image = gameNode.getImage();
             } else {
-                gameNode = new GameNode(true, image, curLevels);
+                gameNode = new GameNode(image);
             }
-            nodes.add(gameNode);
+            gamePanel.getNodes().add(gameNode);
         }
     }
 
