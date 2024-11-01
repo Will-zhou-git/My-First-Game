@@ -50,20 +50,6 @@ public class GamePanel extends JPanel implements KeyListener {
         nodes = new ArrayList<>();
     }
 
-    private void checkCollision() {
-        Rectangle playerBounds = playerNode.getBounds();
-
-        List<GameNode> nodesToRemove = new ArrayList<>();
-        for (GameNode node : nodes) {
-            Rectangle nodeBounds = node.getBounds();
-            if (playerBounds.intersects(nodeBounds)) {
-                nodesToRemove.add(node);
-                scoring++;
-            }
-        }
-        nodes.removeAll(nodesToRemove);
-    }
-
     @Override
     public void paintComponent(Graphics g) {
         super.paintComponent(g);
@@ -142,12 +128,12 @@ public class GamePanel extends JPanel implements KeyListener {
         //检测节点
         checkGameNode();
 
-        //碰撞检测
-        checkCollision();
-
         // 更新当前关卡特殊逻辑
         GameLevel curGameLevel = getCurGameLevel();
         if (curGameLevel != null) {
+            //碰撞检测
+            curGameLevel.checkCollisionPlayerAndNode();
+
             curGameLevel.updateLevel();
         }
 

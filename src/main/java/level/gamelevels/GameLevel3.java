@@ -6,6 +6,7 @@ import lombok.Data;
 import node.GameNode;
 import node.PlayerNode;
 import util.GameUtil;
+import util.UIUtil;
 
 import java.awt.*;
 import java.awt.event.KeyEvent;
@@ -14,7 +15,7 @@ import java.util.Random;
 @Data
 public class GameLevel3 extends GameLevel {
     //关卡信息
-    private int levelTime = 60;
+    private int levelTime = 1;
     private int targetScoreToNext = 20;
 
     //人物信息
@@ -36,12 +37,9 @@ public class GameLevel3 extends GameLevel {
     private GameNode caughtGold = null;  // 抓住的黄金
     private double maxHookLength = 800;  // 增加最大长度
     // 钩子绘制参数
-    private int hookWidth = 4;  // 钩子线条粗细
-    private int hookHeadSize = 15;  // 钩子头部大小
-    // 钩子外观参数
     private int ropeWidth = 3;      // 绳子粗细
     private int hookSize = 20;      // 钩子大小
-    private int hookThickness = 4;  // 钩子头部粗细
+
 
     @Override
     public int getCurLevel() {
@@ -58,12 +56,12 @@ public class GameLevel3 extends GameLevel {
 
     @Override
     public int[] getNewXAndYAndD(PlayerNode playerNode) {
-        return playerNode.getNewXAndYAndD(playerNode.getX(), playerNode.getY(), playerNode.getDirection(), playerSpeed);
+        return playerNode.getNewXAndYAndD(playerNode, playerNode.getX(), playerNode.getY(), playerNode.getDirection(), playerSpeed);
     }
 
     @Override
     public int[] getNewXAndYAndD(GameNode gameNode1) {
-        return gameNode1.getNewXAndYAndD(gameNode1.getX(), gameNode1.getY(), gameNode1.getDirection(), getNodeSpeed(),
+        return gameNode1.getNewXAndYAndD(gameNode1, gameNode1.getX(), gameNode1.getY(), gameNode1.getDirection(), getNodeSpeed(),
         new int[]{0, 300, GameUtil.gamePanel.getBoundWidth(), GameUtil.gamePanel.getBoundHeight() - 100});
     }
 
@@ -151,12 +149,9 @@ public class GameLevel3 extends GameLevel {
         }
     }
 
-    private boolean isNearPoint(double x1, double y1, double x2, double y2, double distance) {
-        return Math.sqrt(Math.pow(x1 - x2, 2) + Math.pow(y1 - y2, 2)) <= distance;
-    }
-
     @Override
     public void handleKeyPressed(int keyCode) {
+        super.handleKeyPressed(keyCode);
         if (keyCode == KeyEvent.VK_SPACE && !isHookExtending && !isHookRetracting) {
             isHookExtending = true;
         }
@@ -178,7 +173,7 @@ public class GameLevel3 extends GameLevel {
         g2d.drawLine(startX, startY, endX, endY);
 
         // 绘制钩子头
-        drawHook(g2d, endX, endY, hookAngle);
+        UIUtil.drawHook(g2d, endX, endY, hookAngle, hookSize);
 
         // 如果抓住了黄金，在钩子末端绘制
         if (caughtGold != null) {
@@ -187,31 +182,10 @@ public class GameLevel3 extends GameLevel {
         }
     }
 
-    // 绘制更精细的钩子头
-    private void drawHook(Graphics2D g2d, int x, int y, double angle) {
-        g2d.setColor(new Color(169, 169, 169)); // 银灰色钩子
-        g2d.setStroke(new BasicStroke(hookThickness, BasicStroke.CAP_ROUND, BasicStroke.JOIN_ROUND));
-
-        // 计算钩子的弧形路径
-        double hookAngleRad = Math.toRadians(angle);
-        int[] xPoints = new int[4];
-        int[] yPoints = new int[4];
-
-        // 钩子的主体部分
-        xPoints[0] = x;
-        yPoints[0] = y;
-
-        // 钩子的弯曲部分
-        xPoints[1] = x + (int)(hookSize * Math.sin(hookAngleRad + Math.PI/6));
-        yPoints[1] = y + (int)(hookSize * Math.cos(hookAngleRad + Math.PI/6));
-
-        xPoints[2] = x + (int)(hookSize * 1.2 * Math.sin(hookAngleRad));
-        yPoints[2] = y + (int)(hookSize * 1.2 * Math.cos(hookAngleRad));
-
-        xPoints[3] = x + (int)(hookSize * Math.sin(hookAngleRad - Math.PI/6));
-        yPoints[3] = y + (int)(hookSize * Math.cos(hookAngleRad - Math.PI/6));
-
-        // 绘制钩子
-        g2d.drawPolyline(xPoints, yPoints, 4);
+    @Override
+    public void enterNextLevel(){
+        GamePanel gamePanel = GameUtil.gamePanel;
+        gamePanel.setGameLevel(new GameLevel4());
+        super.enterNextLevel();
     }
 }

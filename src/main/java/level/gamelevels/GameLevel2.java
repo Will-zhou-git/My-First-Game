@@ -7,7 +7,10 @@ import node.GameNode;
 import node.PlayerNode;
 import util.GameUtil;
 
+import java.util.Arrays;
+import java.util.HashSet;
 import java.util.Random;
+import java.util.Set;
 
 @Data
 public class GameLevel2 extends GameLevel {
@@ -63,11 +66,11 @@ public class GameLevel2 extends GameLevel {
     @Override
     public int[] getNewXAndYAndD(PlayerNode playerNode) {
         return playerNode.getNewXAndYAndD(
-                playerNode.getX(),
+                playerNode, playerNode.getX(),
                 playerNode.getY(),
                 playerNode.getDirection(),
                 playerSpeed,
-                new int[]{playerNode.getBoundX(), playerNode.getBoundY() - 800});
+                new int[]{0, 750, playerNode.getBoundX(), playerNode.getBoundY()});
     }
 
     @Override
@@ -75,7 +78,7 @@ public class GameLevel2 extends GameLevel {
         if (gameNode1 == null) {
             return null;
         }
-        return gameNode1.getNewXAndYAndD(gameNode1.getX(), gameNode1.getY(), GameUtil.down, nodeSpeed, 1);
+        return gameNode1.getNewXAndYAndD(gameNode1, gameNode1.getX(), gameNode1.getY(), GameUtil.down, nodeSpeed, 1);
     }
 
     @Override
@@ -86,5 +89,17 @@ public class GameLevel2 extends GameLevel {
     @Override
     public int[] getRanDomXAndY(int boundX, int boundY) {
         return new int[]{new Random().nextInt(boundX), new Random().nextInt(100)};
+    }
+
+    @Override
+    public Set<Integer> getValidDirect(GameNode gameNode) {
+        if (gameNode instanceof PlayerNode) {
+            return new HashSet<>(Arrays.asList(
+                    GameUtil.left,
+                    GameUtil.right));
+        } else {
+            return super.getValidDirect(gameNode);
+        }
+
     }
 }

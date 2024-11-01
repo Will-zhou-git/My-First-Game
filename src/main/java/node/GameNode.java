@@ -125,28 +125,35 @@ public class GameNode {
         return 1;
     }
 
-    public int[] getNewXAndYAndD(int x, int y, int direction, int speed) {
-        return getNewXAndYAndD(x, y, direction, speed, new int[]{boundX, boundY}, 0);
+    public int[] getNewXAndYAndD(GameNode gameNode, int x, int y, int direction, int speed) {
+        return getNewXAndYAndD(gameNode, x, y, direction, speed, new int[]{boundX, boundY}, 0);
     }
 
-    public int[] getNewXAndYAndD(int x, int y, int direction, int speed, int[] limit) {
-        return getNewXAndYAndD(x, y, direction, speed, limit, 0);
+    public int[] getNewXAndYAndD(GameNode gameNode, int x, int y, int direction, int speed, int[] limit) {
+        return getNewXAndYAndD(gameNode, x, y, direction, speed, limit, 0);
     }
 
-    public int[] getNewXAndYAndD(int x, int y, int direction, int speed, int disappear) {
-        return getNewXAndYAndD(x, y, direction, speed, new int[]{boundX, boundY}, disappear);
+    public int[] getNewXAndYAndD(GameNode gameNode, int x, int y, int direction, int speed, int disappear) {
+        return getNewXAndYAndD(gameNode, x, y, direction, speed, new int[]{boundX, boundY}, disappear);
     }
 
-    public int[] getNewXAndYAndD(int x, int y, int direction, int speed, int[] limit, int disappear) {
-        if (limit == null || limit.length < 2) {
+    public int[] getNewXAndYAndD(GameNode gameNode, int x, int y, int direction, int speed, int[] limit, int disappear) {
+        if (gameNode == null || limit == null || limit.length < 2) {
             return null;
         }
         if (limit.length == 2) {
             limit = new int[]{0, 0, boundX, boundY};
         }
+
+        GameLevel curGameLevel = GameUtil.gamePanel.getCurGameLevel();
+        if (!curGameLevel.getValidDirect(gameNode).contains(direction)) {
+            return null;
+        }
+
+
         boolean changeDirection = false;
         switch (direction) {
-            case 0:
+            case GameUtil.up:
                 int nextYl = y - speed;
                 if (nextYl >= limit[1] && nextYl <= limit[3]) {
                     y = nextYl;
@@ -154,7 +161,7 @@ public class GameNode {
                     changeDirection = true;
                 }
                 break;
-            case 1:
+            case GameUtil.down:
                 int nextYr = y + speed;
                 if (nextYr >= limit[1] && nextYr <= limit[3]) {
                     y = nextYr;
@@ -162,7 +169,7 @@ public class GameNode {
                     changeDirection = true;
                 }
                 break;
-            case 2:
+            case GameUtil.left:
                 int nextXl = x - speed;
                 if (nextXl >= limit[0] && nextXl <= limit[2]) {
                     x = nextXl;
@@ -170,7 +177,7 @@ public class GameNode {
                     changeDirection = true;
                 }
                 break;
-            case 3:
+            case GameUtil.right:
                 int nextXr = x + speed;
                 if (nextXr >= limit[0] && nextXr <= limit[2]) {
                     x = nextXr;

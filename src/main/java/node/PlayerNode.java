@@ -6,6 +6,7 @@ import lombok.Data;
 import util.GameUtil;
 
 import java.awt.*;
+import java.awt.geom.AffineTransform;
 
 @Data
 public class PlayerNode extends GameNode{
@@ -27,7 +28,15 @@ public class PlayerNode extends GameNode{
 
     @Override
     public void draw(Graphics g) {
-       g.drawImage(super.getImage(), super.getX(), super.getY(), width, height,null);
+        // 绘制基础图片
+        g.drawImage(super.getImage(), super.getX(), super.getY(), width, height, null);
+
+        GameLevel curGameLevel = GameUtil.gamePanel.getCurGameLevel();
+        if (curGameLevel == null) {
+            return;
+        }
+
+        curGameLevel.changePlayerAttackUI(g);
     }
 
     @Override

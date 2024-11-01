@@ -7,7 +7,9 @@ import node.PlayerNode;
 import util.GameUtil;
 
 import java.awt.*;
-import java.util.Random;
+import java.awt.event.KeyEvent;
+import java.util.*;
+import java.util.List;
 
 @Data
 public abstract class GameLevel {
@@ -57,14 +59,14 @@ public abstract class GameLevel {
         if (playerNode == null) {
             return null;
         }
-        return playerNode.getNewXAndYAndD(playerNode.getX(), playerNode.getY(), playerNode.getDirection(), playerSpeed);
+        return playerNode.getNewXAndYAndD(playerNode, playerNode.getX(), playerNode.getY(), playerNode.getDirection(), playerSpeed);
     }
 
     public int[] getNewXAndYAndD(GameNode gameNode1) {
         if (gameNode1 == null) {
             return null;
         }
-        return gameNode1.getNewXAndYAndD(gameNode1.getX(), gameNode1.getY(), gameNode1.getDirection(), nodeSpeed);
+        return gameNode1.getNewXAndYAndD(gameNode1, gameNode1.getX(), gameNode1.getY(), gameNode1.getDirection(), nodeSpeed);
     }
 
     public int[] getRanDomXAndY(int boundX, int boundY) {
@@ -84,5 +86,38 @@ public abstract class GameLevel {
     public void handleKeyPressed(int keyCode) {
         // 默认空实现，子类可以覆盖
         // 处理当前关卡特殊按键
+        if (keyCode == KeyEvent.VK_ESCAPE) {
+            // 直接进入下一关
+            enterNextLevel();
+        }
+    }
+
+    public int checkCollisionPlayerAndNode() {
+        GamePanel gamePanel = GameUtil.gamePanel;
+
+        Rectangle playerBounds = gamePanel.getPlayerNode().getBounds();
+
+        List<GameNode> nodesToRemove = new ArrayList<>();
+        for (GameNode node : gamePanel.getNodes()) {
+            Rectangle nodeBounds = node.getBounds();
+            if (playerBounds.intersects(nodeBounds)) {
+                nodesToRemove.add(node);
+                gamePanel.setScoring(gamePanel.getScoring() + 1);
+            }
+        }
+        gamePanel.getNodes().removeAll(nodesToRemove);
+        return nodesToRemove.size();
+    }
+
+    public void changePlayerAttackUI(Graphics g) {
+
+    }
+
+    public Set<Integer> getValidDirect(GameNode gameNode) {
+        return new HashSet<>(Arrays.asList(
+                GameUtil.up,
+                GameUtil.down,
+                GameUtil.left,
+                GameUtil.right));
     }
 }
