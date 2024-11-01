@@ -141,11 +141,14 @@ public class GameNode {
         if (limit == null || limit.length < 2) {
             return null;
         }
+        if (limit.length == 2) {
+            limit = new int[]{0, 0, boundX, boundY};
+        }
         boolean changeDirection = false;
         switch (direction) {
             case 0:
                 int nextYl = y - speed;
-                if (nextYl >= 0 && nextYl <= limit[1]) {
+                if (nextYl >= limit[1] && nextYl <= limit[3]) {
                     y = nextYl;
                 } else {
                     changeDirection = true;
@@ -153,7 +156,7 @@ public class GameNode {
                 break;
             case 1:
                 int nextYr = y + speed;
-                if (nextYr >= 0 && nextYr <= limit[1]) {
+                if (nextYr >= limit[1] && nextYr <= limit[3]) {
                     y = nextYr;
                 } else {
                     changeDirection = true;
@@ -161,7 +164,7 @@ public class GameNode {
                 break;
             case 2:
                 int nextXl = x - speed;
-                if (nextXl >= 0 && nextXl <= limit[0]) {
+                if (nextXl >= limit[0] && nextXl <= limit[2]) {
                     x = nextXl;
                 } else {
                     changeDirection = true;
@@ -169,7 +172,7 @@ public class GameNode {
                 break;
             case 3:
                 int nextXr = x + speed;
-                if (nextXr >= 0 && nextXr <= limit[0]) {
+                if (nextXr >= limit[0] && nextXr <= limit[2]) {
                     x = nextXr;
                 } else {
                     changeDirection = true;

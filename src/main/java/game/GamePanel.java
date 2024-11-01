@@ -101,6 +101,9 @@ public class GamePanel extends JPanel implements KeyListener {
             }
             node.draw(g);
         }
+
+        // 绘制当前关卡特殊元素
+        curGameLevel.drawSpecialElements(g);
     }
 
     @Override
@@ -109,6 +112,12 @@ public class GamePanel extends JPanel implements KeyListener {
     @Override
     public void keyPressed(KeyEvent e) {
         playerNode.keyPressed(e);
+
+        // 处理当前关卡特殊按键
+        GameLevel curGameLevel = getCurGameLevel();
+        if (curGameLevel != null) {
+            curGameLevel.handleKeyPressed(e.getKeyCode());
+        }
     }
 
     @Override
@@ -135,6 +144,12 @@ public class GamePanel extends JPanel implements KeyListener {
 
         //碰撞检测
         checkCollision();
+
+        // 更新当前关卡特殊逻辑
+        GameLevel curGameLevel = getCurGameLevel();
+        if (curGameLevel != null) {
+            curGameLevel.updateLevel();
+        }
 
         //触发组件重新绘制
         repaint();

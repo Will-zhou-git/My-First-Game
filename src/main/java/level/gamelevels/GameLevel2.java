@@ -12,7 +12,7 @@ import java.util.Random;
 @Data
 public class GameLevel2 extends GameLevel {
     //关卡信息
-    private int levelTime = 30;
+    private int levelTime = 1;
     private int targetScoreToNext = 20;
     private String backGroundImage = "background/green2.png";
 

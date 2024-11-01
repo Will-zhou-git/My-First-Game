@@ -6,6 +6,7 @@ import node.GameNode;
 import node.PlayerNode;
 import util.GameUtil;
 
+import java.awt.*;
 import java.util.Random;
 
 @Data
@@ -68,5 +69,20 @@ public abstract class GameLevel {
 
     public int[] getRanDomXAndY(int boundX, int boundY) {
         return new int[]{new Random().nextInt(boundX), new Random().nextInt(boundY)};
+    }
+
+    public void updateLevel() {
+        // 默认空实现，子类可以覆盖
+        // 更新当前关卡特殊逻辑
+    }
+
+    public void drawSpecialElements(Graphics g) {
+        // 默认空实现，子类可以覆盖
+        // 绘制当前关卡特殊元素
+    }
+
+    public void handleKeyPressed(int keyCode) {
+        // 默认空实现，子类可以覆盖
+        // 处理当前关卡特殊按键
     }
 }
